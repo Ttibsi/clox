@@ -64,7 +64,6 @@ bool walker(Nob_Walk_Entry entry) {
 
     Cmd cmd = {0};
     cmd_append(&cmd, "cc");
-    nob_cc_flags(&cmd);
     cmd_append(&cmd, "-g");
     cmd_append(&cmd, "-std=c99");
     cmd_append(&cmd, "-Wfatal-errors");
@@ -79,7 +78,6 @@ bool walker(Nob_Walk_Entry entry) {
 int compile_exe() {
     Cmd cmd = {0};
     cmd_append(&cmd, "cc");
-    nob_cc_flags(&cmd);
     cmd_append(&cmd, "-g");
     cmd_append(&cmd, "-std=c99");
     cmd_append(&cmd, "-Wfatal-errors");

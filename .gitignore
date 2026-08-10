@@ -1,6 +1,7 @@
 clox
 build/
-iris.log 
-.gdb_history 
-.cache/ 
+iris.log
+.gdb_history
+.cache/
 nob
+nob.old
