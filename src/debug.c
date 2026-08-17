@@ -19,7 +19,7 @@ static int simpleInstruction(const char* name, int offset) {
 static int byteInstruction(const char* name, Chunk* chunk, int offset) {
     uint8_t slot = chunk->code[offset + 1];
     printf("%-16s %4d\n", name, slot);
-    return offset + 2; 
+    return offset + 2;
 }
 
 static int jumpInstruction(const char* name, int sign, Chunk* chunk, int offset) {
@@ -98,6 +98,14 @@ int disassembleInstruction(Chunk* chunk, int offset) {
             return jumpInstruction("OP_LOOP", -1, chunk, offset);
         case OP_CALL:
             return byteInstruction("OP_CALL", chunk, offset);
+        case OP_CLOSURE: {
+            offset++;
+            uint8_t constant = chunk->code[offset++];
+            printf("%-16s %4d ", "OP_CLOSURE", constant);
+            printValue(chunk->constants.values[constant]);
+            printf("\n");
+            return offset;
+        }
         default:
             printf("Unknown opcode %d\n", instruction);
             return offset + 1;
