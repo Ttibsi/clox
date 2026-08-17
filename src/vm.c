@@ -168,7 +168,7 @@ static InterpretResult run() {
         printf("\n");
         disassembleInstruction(
             &frame->function->chunk,
-            (int)(&frame->ip - &frame->function->chunk.code)
+            (int)(frame->ip - frame->function->chunk.code)
         );
 #endif
 
@@ -183,7 +183,7 @@ static InterpretResult run() {
             }
             case OP_SET_LOCAL: {
                 uint8_t slot = READ_BYTE();
-                vm.stack[slot] = peek(0);
+                frame->slots[slot] = peek(0);
                 break;
             }
             case OP_GET_GLOBAL: {
@@ -251,7 +251,7 @@ static InterpretResult run() {
                 push(NUMBER_VAL(-AS_NUMBER(pop())));
                 break;
             case OP_JUMP: {
-                uint8_t offset = READ_SHORT();
+                uint16_t offset = READ_SHORT();
                 frame->ip += offset; 
                 break;
             }
@@ -263,7 +263,7 @@ static InterpretResult run() {
             }
 
             case OP_JUMP_IF_FALSE: {
-                uint8_t offset = READ_SHORT();
+                uint16_t offset = READ_SHORT();
                 if (isFalsey(peek(0))) { frame->ip += offset; }
                 break;
             }

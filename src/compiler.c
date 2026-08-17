@@ -134,7 +134,7 @@ static void emitBytes(uint8_t byte1, uint8_t byte2) {
 
 static void emitLoop(int loopStart) {
     emitByte(OP_LOOP);
-    int offset = currentChunk()->count - loopStart - 2;
+    int offset = currentChunk()->count - loopStart + 2;
     if (offset > UINT16_MAX) { error("Loop body too large."); }
 
     emitByte((offset >> 8) & 0xff);
@@ -252,7 +252,7 @@ static void emitConstant(Value value) {
 
 static void patchJump(int offset) {
     int jump = currentChunk()->count - offset - 2;
-    if (jump > UINT8_MAX) {
+    if (jump > UINT16_MAX) {
         error ("Too much code to jump over.");
     }
 
@@ -328,7 +328,7 @@ static void variable(bool canAssign) {
 
 static void unary(bool canAssign) {
     TokenType operatorType = parser.previous.type;
-    expression();
+    parsePrecedence(PREC_UNARY);
 
     switch (operatorType) {
         case TOKEN_MINUS: emitByte(OP_NEGATE); break;
@@ -338,7 +338,7 @@ static void unary(bool canAssign) {
 }
 
 ParseRule rules[] = {
-  [TOKEN_LEFT_PAREN]    = {grouping, call,   PREC_NONE},
+  [TOKEN_LEFT_PAREN]    = {grouping, call,   PREC_CALL},
   [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   PREC_NONE},
   [TOKEN_LEFT_BRACE]    = {NULL,     NULL,   PREC_NONE}, 
   [TOKEN_RIGHT_BRACE]   = {NULL,     NULL,   PREC_NONE},
@@ -437,7 +437,7 @@ static void addLocal(Token name) {
 }
 
 static void declareVariable() {
-    if (current->scopeDepth > 0) { return; }
+    if (current->scopeDepth == 0) { return; }
     Token* name = &parser.previous;
     for (int i = current->localCount - 1; i >= 0; i--) {
         Local* local = &current->locals[i];
