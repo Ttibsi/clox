@@ -202,6 +202,8 @@ static void parsePrecedence(Precedence precedence);
 static void and_(bool canAssign);
 static int resolveLocal(Compiler* compiler, Token* name);
 static uint8_t argumentList();
+static int resolveUpvalue(Compiler* compiler, Token* name);
+static int addUpvalue(Compiler* compiler, uint8_t index, bool isLocal);
 
 static void binary(bool canAssign) {
     TokenType operatorType = parser.previous.type;
@@ -314,7 +316,7 @@ static void namedVariable(Token name, bool canAssign) {
     if (arg != -1) {
         getOp = OP_GET_LOCAL;
         setOp = OP_SET_LOCAL;
-    } else if ((arg == resolvedUpvalue(current, &name)) != -1) {
+    } else if ((arg == resolveUpvalue(current, &name)) != -1) {
         getOp = OP_GET_UPVALUE;
         setOp = OP_SET_UPVALUE;
     } else {
@@ -441,6 +443,9 @@ static int resolveUpvalue(Compiler* compiler, Token* name) {
     if (local != -1) {
         return addUpvalue(compiler, (uint8_t)local, true);
     }
+
+    int upvalue = resolveUpvalue(compiler->enclosing, name);
+    if (upvalue != -1) { return addUpvalue(compiler, (uint8_t)upvalue, false); }
 
     return -1;
 }
@@ -578,6 +583,11 @@ static void function(FunctionType type) {
 
     ObjFunction* function = endCompiler();
     emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(function)));
+
+    for (int i = 0; i < function->upvalueCount; i++) {
+        emitByte(compiler.upvalues[i].isLocal ? 1 : 0);
+        emitByte(compiler.upvalues[i].index);
+    }
 }
 
 static void funDeclaration() {
