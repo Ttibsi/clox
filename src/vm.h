@@ -18,12 +18,16 @@ typedef struct {
     CallFrame frames[FRAMES_MAX];
     int frameCount;
 
-  Value stack[STACK_MAX];
-  Value* stackTop;
-  Table globals;
-  Table strings;
-  Obj* objects;
-  ObjUpvalue* openUpvalues;
+    Value stack[STACK_MAX];
+    Value* stackTop;
+    Table globals;
+    Table strings;
+    Obj* objects;
+    ObjUpvalue* openUpvalues;
+
+    int grayCount;
+    int grayCapacity;
+    Obj** grayStack;
 } VM;
 
 typedef enum {

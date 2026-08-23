@@ -26,7 +26,7 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
     for (;;) {
         Entry* entry = &entries[index];
         if (entry->key == NULL) {
-            if (IS_NIL(entry->value)) { 
+            if (IS_NIL(entry->value)) {
                 // Empty entry
                 return tombstone != NULL ? tombstone : entry;
             } else {
@@ -45,7 +45,7 @@ bool tableGet(Table* table, ObjString* key, Value* value) {
     if (table->count == 0) { return false; }
 
     Entry* entry = findEntry(table->entries, table->capacity, key);
-    if (entry->key == NULL) { return false; } 
+    if (entry->key == NULL) { return false; }
 
     *value = entry->value;
     return true;
@@ -79,7 +79,7 @@ bool tableSet(Table* table, ObjString* key, Value value) {
     if (table->count + 1 > table->capacity * TABLE_MAX_LOAD) {
         int capacity = GROW_CAPACITY(table->capacity);
         adjustCapacity(table, capacity);
-    } 
+    }
     Entry* entry = findEntry(table->entries, table->capacity, key);
     bool isNewKey = entry->key == NULL;
     if (isNewKey && IS_NIL(entry->value)) { table->count++; }
@@ -129,5 +129,13 @@ ObjString* tableFindString(Table* table, const char* chars,
         }
 
         index = (index + 1) % table->capacity;
+    }
+}
+
+void markTable(Table* table) {
+    for (int i = 0; i < table->capacity; i++){
+        Entry* entry = &table->entries[i];
+        markObject((Obj*)entry->key);
+        markValue(entry->value);
     }
 }

@@ -57,6 +57,11 @@ static void defineNative(const char* name, NativeFn function) {
 void initVM() {
     resetStack();
     vm.objects = NULL;
+    vm.grayCount = 0;
+    vm.grayCpacity = 0;
+    vm.grayStack = NULL;
+
+
     initTable(&vm.globals);
     initTable(&vm.strings);
 
@@ -363,7 +368,7 @@ static InterpretResult run() {
                 break;
             }
 
-            case OP_CLOSE_UPVALUE: 
+            case OP_CLOSE_UPVALUE:
                 closeUpvalues(vm.stackTop - 1);
                 pop();
                 break;
