@@ -18,6 +18,8 @@ typedef enum {
     OP_SET_LOCAL,
     OP_GET_UPVALUE,
     OP_SET_UPVALUE,
+    OP_GET_PROPERTY,
+    OP_SET_PROPERTY,
     OP_GREATER,
     OP_LESS,
     OP_MULTIPLY,
@@ -32,6 +34,7 @@ typedef enum {
     OP_NIL,
     OP_NOT,
     OP_RETURN,
+    OP_CLASS,
     OP_SUBTRACT,
     OP_TRUE,
 } OpCode;
