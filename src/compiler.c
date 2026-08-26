@@ -318,7 +318,7 @@ static void initCompiler(Compiler* compiler, FunctionType type) {
 
     Local* local = &current->locals[current->localCount++];
     local->depth = 0;
-    local->isCaptured - false;
+    local->isCaptured = false;
 
     if (type != TYPE_FUNCTION) {
         local->name.start = "this";
@@ -358,7 +358,7 @@ static void namedVariable(Token name, bool canAssign) {
     if (arg != -1) {
         getOp = OP_GET_LOCAL;
         setOp = OP_SET_LOCAL;
-    } else if ((arg == resolveUpvalue(current, &name)) != -1) {
+    } else if ((arg = resolveUpvalue(current, &name)) != -1) {
         getOp = OP_GET_UPVALUE;
         setOp = OP_SET_UPVALUE;
     } else {
@@ -647,7 +647,7 @@ static void method() {
     consume(TOKEN_IDENTIFIER, "Expect method name.");
     uint8_t constant = identifierConstant(&parser.previous);
     FunctionType type = TYPE_METHOD;
-    if (parser.previous.length == 4 && memcmp(parser.previous.start, "init", 4)) {
+    if (parser.previous.length == 4 && memcmp(parser.previous.start, "init", 4) == 0) {
         type = TYPE_INITIALIZER;
     }
     function(type);
