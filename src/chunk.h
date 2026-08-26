@@ -37,6 +37,8 @@ typedef enum {
     OP_CLASS,
     OP_SUBTRACT,
     OP_TRUE,
+    OP_METHOD,
+    OP_INVOKE,
 } OpCode;
 
 typedef struct {
